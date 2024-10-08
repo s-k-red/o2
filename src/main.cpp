@@ -12,17 +12,12 @@ SoftwareSerial modbusSerial(18, 19, false);
 
 void modbusPreTransmission()
 {
-    delay(500);
-    digitalWrite(25, HIGH);
-    digitalWrite(26, HIGH);
 }
 
 // Pin 4 made low for Modbus receive mode
 void modbusPostTransmission()
 {
-
-    digitalWrite(25, LOW);
-    digitalWrite(26, LOW);
+    digitalWrite(19, LOW);
     delay(500);
 }
 void setup()
@@ -40,11 +35,6 @@ void setup()
     }
     pinMode(18, INPUT);
     pinMode(19, OUTPUT);
-    pinMode(25, OUTPUT);
-    pinMode(26, OUTPUT);
-
-    digitalWrite(25, LOW);
-    digitalWrite(26, LOW);
 
     modbusSerial.begin(9600);
 
