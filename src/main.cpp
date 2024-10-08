@@ -46,27 +46,45 @@ void setup()
     digitalWrite(25, LOW);
     digitalWrite(26, LOW);
 
-    modbusSerial.begin(19200);
+    modbusSerial.begin(9600);
 
     while (!modbusSerial)
     {
         ; // wait for serial port to connect. Needed for native USB port only
     }
     // modbus device slave ID 14
-    node.begin(0, modbusSerial);
+
+    node.begin(0x37, modbusSerial);
 
     node.preTransmission(modbusPreTransmission);
     node.postTransmission(modbusPostTransmission);
-
-    auto ret = node.readHoldingRegisters(4288, 4);
-    Serial.print(std::to_string(ret).c_str());
-
-    auto ret1 = node.readHoldingRegisters(4287, 3);
-    Serial.print(std::to_string(ret1).c_str());
 }
 
 void loop()
-{ /*
+{
+
+    auto ret = node.readHoldingRegisters(0x0100, 1);
+    Serial.print(std::to_string(ret).c_str());
+    if (ret == node.ku8MBSuccess)
+    {
+        for (int j = 0; j < 1; j++)
+        {
+            Serial.print(std::to_string(node.getResponseBuffer(j)).c_str());
+        }
+        Serial.println();
+    }
+
+    ret = node.readHoldingRegisters(0x0101, 1);
+    Serial.print(std::to_string(ret).c_str());
+    if (ret == node.ku8MBSuccess)
+    {
+        for (int j = 0; j < 1; j++)
+        {
+            Serial.print(std::to_string(node.getResponseBuffer(j)).c_str());
+        }
+        Serial.println();
+    }
+    /*
      uint8_t result;
      //for store 32-bit data
      uint16_t data[2];
