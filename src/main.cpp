@@ -12,8 +12,7 @@ SoftwareSerial modbusSerial(18, 19, false);
 
 void modbusPreTransmission()
 {
-    delay(500);
-    digitalWrite(25, HIGH);
+    delay(250);
     digitalWrite(26, HIGH);
 }
 
@@ -21,9 +20,8 @@ void modbusPreTransmission()
 void modbusPostTransmission()
 {
 
-    digitalWrite(25, LOW);
     digitalWrite(26, LOW);
-    delay(500);
+    delay(250);
 }
 void setup()
 {
@@ -40,50 +38,58 @@ void setup()
     }
     pinMode(18, INPUT);
     pinMode(19, OUTPUT);
-    pinMode(25, OUTPUT);
     pinMode(26, OUTPUT);
 
-    digitalWrite(25, LOW);
     digitalWrite(26, LOW);
 
-    modbusSerial.begin(9600);
+    modbusSerial.begin(9600, SoftwareSerialConfig::SWSERIAL_8N2);
 
     while (!modbusSerial)
     {
         ; // wait for serial port to connect. Needed for native USB port only
     }
-    // modbus device slave ID 14
 
-    node.begin(0x37, modbusSerial);
+    node.begin(0x0, modbusSerial);
 
     node.preTransmission(modbusPreTransmission);
     node.postTransmission(modbusPostTransmission);
+
+    node.begin(7, modbusSerial);
+
+    auto ret = node.readHoldingRegisters(2409, 10);
+    Serial.print(std::to_string(ret).c_str());
+    if (ret == node.ku8MBSuccess)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            Serial.print(std::to_string(node.getResponseBuffer(j)).c_str());
+        }
+        Serial.print(ret);
+    }
+    Serial.println();
 }
 
 void loop()
-{
+{ /*
+     for (size_t i = 0; i < 33; i++)
+     {
 
-    auto ret = node.readHoldingRegisters(0x0100, 1);
-    Serial.print(std::to_string(ret).c_str());
-    if (ret == node.ku8MBSuccess)
-    {
-        for (int j = 0; j < 1; j++)
-        {
-            Serial.print(std::to_string(node.getResponseBuffer(j)).c_str());
-        }
-        Serial.println();
-    }
+         node.begin(i, modbusSerial);
 
-    ret = node.readHoldingRegisters(0x0101, 1);
-    Serial.print(std::to_string(ret).c_str());
-    if (ret == node.ku8MBSuccess)
-    {
-        for (int j = 0; j < 1; j++)
-        {
-            Serial.print(std::to_string(node.getResponseBuffer(j)).c_str());
-        }
-        Serial.println();
-    }
+         auto ret = node.readHoldingRegisters(2410, 10);
+         Serial.print(std::to_string(ret).c_str());
+         if (ret == node.ku8MBSuccess)
+         {
+             Serial.print(std::to_string(i).c_str());
+             for (int j = 0; j < 10; j++)
+             {
+                 Serial.print(std::to_string(node.getResponseBuffer(j)).c_str());
+             }
+         }
+         Serial.println();
+     }
+     Serial.println("end of loop");*/
+
     /*
      uint8_t result;
      //for store 32-bit data
